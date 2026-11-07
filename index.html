@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소아 증상 분류기</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <div class="panel">
+  <header>
+    <h1>소아 증상 분류기 <span class="tag">AI + 규칙</span></h1>
+    <p class="notice">연습용 분류기입니다.<br>의료진의 판단을 대신하지 않습니다.<br>응급이 의심되면 바로 119에 신고하세요.</p>
+  </header>
+
+  <div class="inner">
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-classify" aria-selected="true" aria-controls="panel-classify">분류</button>
+    <button role="tab" id="tab-score" aria-selected="false" aria-controls="panel-score">채점</button>
+  </nav>
+
+  <main>
+    <section id="panel-classify" role="tabpanel" aria-labelledby="tab-classify">
+      <label for="input">아이 증상을 한 줄로 적어 주세요</label>
+      <textarea id="input" rows="3" placeholder="예: 5살 아이가 밤부터 귀가 아프다고 울어요"></textarea>
+      <button id="run" class="primary">분류하기</button>
+
+      <div id="result" class="card" hidden>
+        <p id="r-source" class="source"></p>
+        <dl>
+          <dt>가린 문장</dt><dd id="r-masked"></dd>
+          <dt>칸</dt><dd><strong id="r-kan"></strong> <small id="r-kan-def"></small></dd>
+          <dt>긴급도</dt><dd><strong id="r-urg"></strong> <small id="r-urg-def"></small></dd>
+          <dt>이유</dt><dd id="r-reason"></dd>
+        </dl>
+        <p id="r-er" class="er" hidden></p>
+      </div>
+    </section>
+
+    <section id="panel-score" role="tabpanel" aria-labelledby="tab-score" hidden>
+      <p class="lead">정답 파일(data/answer.json)의 문장을 규칙 또는 AI로 분류해 정답과 견줍니다.</p>
+      <button id="score" class="primary">규칙으로 채점</button>
+      <button id="score-ai" class="primary">AI로 채점</button>
+      <p id="ai-progress" class="progress" hidden></p>
+      <div id="ai-out" hidden>
+        <h2>규칙과 AI 비교</h2>
+        <div class="table-wrap"><table id="compare"></table></div>
+        <p class="cond" id="ai-cond"></p>
+        <button id="ai-download" class="primary">AI 채점 결과 내려받기</button>
+      </div>
+      <div id="score-out" hidden>
+        <div class="stats" id="stats"></div>
+        <p class="cond" id="cond"></p>
+        <h2>틀린 문장 <span id="wrong-count"></span></h2>
+        <ol id="wrong" class="wrong"></ol>
+      </div>
+    </section>
+  </main>
+  </div>
+
+  <footer id="owner"></footer>
+ </div>
+
+  <script src="mask.js"></script>
+  <script src="rules.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
