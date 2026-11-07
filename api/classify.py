@@ -105,7 +105,16 @@ def classify(texts, key, model):
         with urllib.request.urlopen(req, timeout=TIMEOUT_SEC) as r:
             data = json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
-        return None, f"Gemini 호출 실패 (HTTP {e.code})"
+        # Gemini 가 돌려준 오류 상태·설명을 붙인다 (예: 404 NOT_FOUND, 400 INVALID_ARGUMENT).
+        # 열쇠 값은 Gemini 오류 설명에 들어 있지 않다. 그래도 열쇠 모양이 섞이면 지운다.
+        detail = ""
+        try:
+            err = json.loads(e.read().decode("utf-8", errors="replace")).get("error") or {}
+            detail = " ".join(x for x in [str(err.get("status") or ""), str(err.get("message") or "")] if x)
+        except Exception:
+            pass
+        detail = detail.replace(key, "****")[:200]
+        return None, f"Gemini 호출 실패 (HTTP {e.code})" + (f" — {detail}" if detail else "")
     except (socket.timeout, TimeoutError):
         return None, f"Gemini 응답 시간 초과 ({TIMEOUT_SEC}초)"
     except urllib.error.URLError as e:

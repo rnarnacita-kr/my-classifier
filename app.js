@@ -31,15 +31,18 @@
         body: JSON.stringify({ texts }),
       });
     } catch {
-      return { ok: false, error: "AI 서버에 연결하지 못함" };
+      return { ok: false, error: "[연결 실패] AI 서버에 연결하지 못함" };
     }
+    // 오류 코드: 우리 서버 함수의 HTTP 상태를 [서버 500] 처럼 앞에 붙인다.
+    // Gemini 쪽 코드는 서버가 돌려준 이유 안에 (HTTP 404) 처럼 들어 있다.
+    const code = `[서버 ${res.status}]`;
     let data;
     try {
       data = await res.json();
     } catch {
-      return { ok: false, error: `AI 서버 응답이 올바르지 않음 (HTTP ${res.status})` };
+      return { ok: false, error: `${code} AI 서버 응답이 올바르지 않음` };
     }
-    if (!data || !data.ok) return { ok: false, error: (data && data.error) || `HTTP ${res.status}`, model: data && data.model };
+    if (!data || !data.ok) return { ok: false, error: `${code} ${(data && data.error) || "실패"}`, model: data && data.model };
     if (!Array.isArray(data.results) || data.results.length !== texts.length) {
       return { ok: false, error: "AI 응답 개수가 문장 수와 다름", model: data.model };
     }
